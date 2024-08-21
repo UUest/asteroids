@@ -7,6 +7,7 @@ from constants import *
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from shot import Shot
 
 
 def main():
@@ -22,6 +23,7 @@ def main():
     updateable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
     
     Player.containers = (updateable, drawable)
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
@@ -30,6 +32,8 @@ def main():
     
     AsteroidField.containers = (updateable)
     asteroid_field = AsteroidField()
+    
+    Shot.containers = (shots, updateable, drawable)
     
     
     while True:
@@ -40,10 +44,16 @@ def main():
         for obj in updateable:
             obj.update(dt)
 
-        for obj in asteroids:
-            if obj.collision(player) == True:
+        for asteroid in asteroids:
+            if asteroid.collision(player) == True:
                 print("Game Over!")
                 sys.exit()
+        
+        for asteroid in asteroids:
+            for shot in shots:
+                if asteroid.collision(shot) == True:
+                    asteroid.split()
+                    shot.kill()
         
         screen.fill("black")
 
